@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator | គណនាអាយុ</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Koulen&family=Noto+Sans+Khmer:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', 'Noto Sans Khmer', sans-serif;
+            background-color: #111827; /* Dark background */
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .khmer-font {
+            font-family: 'Noto Sans Khmer', sans-serif;
+        }
+        .eng-font-heavy {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+        }
+        /* Glassmorphism effect for the card */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Custom animation for the numbers */
+        @keyframes pulse-light {
+          0%, 100% {
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+          }
+          50% {
+            text-shadow: 0 0 20px rgba(13, 208, 242, 0.8);
+          }
+        }
+        .time-unit span:first-child {
+            animation: pulse-light 3s infinite ease-in-out;
+        }
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+          -webkit-appearance: none; 
+          margin: 0; 
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-white p-4">
+
+    <div class="card w-full max-w-4xl mx-auto rounded-2xl shadow-2xl p-6 md:p-10 text-center">
+        <!-- Header Section -->
+        <header class="mb-8">
+            <h1 class="khmer-font text-2xl md:text-3xl font-bold text-cyan-300">អ្នកបានរស់នៅលើភពផែនដីនេះ</h1>
+            <div class="relative inline-flex items-center justify-center group mt-2">
+                <p id="birthdate-display" class="khmer-font text-gray-300"></p>
+                <button id="edit-date-btn" class="ml-2 text-gray-400 hover:text-white transition-colors opacity-50 group-hover:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                </button>
+            </div>
+            <!-- Form for editing date -->
+            <div id="date-input-form" class="hidden max-w-sm mx-auto mt-4 p-4 bg-black/30 rounded-lg transition-all duration-300">
+                <div class="flex gap-2 justify-center">
+                    <input id="day-input" type="number" placeholder="ថ្ងៃ" class="w-20 bg-gray-800 text-white border border-gray-600 rounded p-2 text-center focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                    <input id="month-input" type="number" placeholder="ខែ" class="w-20 bg-gray-800 text-white border border-gray-600 rounded p-2 text-center focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                    <input id="year-input" type="number" placeholder="ឆ្នាំ" class="w-24 bg-gray-800 text-white border border-gray-600 rounded p-2 text-center focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                </div>
+                <p id="error-message" class="text-red-400 text-sm mt-2 h-5"></p>
+                <div class="mt-1">
+                     <button id="update-date-btn" class="khmer-font w-full bg-cyan-500 hover:bg-cyan-600 text-black font-bold py-2 px-4 rounded transition-colors">
+                        ធ្វើបច្ចុប្បន្នភាព
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Age Display Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+            <!-- Years -->
+            <div class="time-unit bg-black/20 p-4 md:p-6 rounded-lg">
+                <span id="years" class="eng-font-heavy text-5xl md:text-7xl lg:text-8xl text-cyan-400">0</span>
+                <p class="khmer-font text-lg md:text-xl text-gray-400 mt-2">ឆ្នាំ</p>
+            </div>
+            <!-- Months -->
+            <div class="time-unit bg-black/20 p-4 md:p-6 rounded-lg">
+                <span id="months" class="eng-font-heavy text-5xl md:text-7xl lg:text-8xl text-cyan-400">0</span>
+                <p class="khmer-font text-lg md:text-xl text-gray-400 mt-2">ខែ</p>
+            </div>
+            <!-- Days -->
+            <div class="time-unit bg-black/20 p-4 md:p-6 rounded-lg">
+                <span id="days" class="eng-font-heavy text-5xl md:text-7xl lg:text-8xl text-cyan-400">0</span>
+                <p class="khmer-font text-lg md:text-xl text-gray-400 mt-2">ថ្ងៃ</p>
+            </div>
+            <!-- Hours -->
+            <div class="time-unit bg-black/20 p-4 md:p-6 rounded-lg">
+                <span id="hours" class="eng-font-heavy text-5xl md:text-7xl lg:text-8xl text-cyan-400">0</span>
+                <p class="khmer-font text-lg md:text-xl text-gray-400 mt-2">ម៉ោង</p>
+            </div>
+            <!-- Minutes -->
+            <div class="time-unit bg-black/20 p-4 md:p-6 rounded-lg">
+                <span id="minutes" class="eng-font-heavy text-5xl md:text-7xl lg:text-8xl text-cyan-400">0</span>
+                <p class="khmer-font text-lg md:text-xl text-gray-400 mt-2">នាទី</p>
+            </div>
+            <!-- Seconds -->
+            <div class="time-unit bg-black/20 p-4 md:p-6 rounded-lg">
+                <span id="seconds" class="eng-font-heavy text-5xl md:text-7xl lg:text-8xl text-cyan-400">0</span>
+                <p class="khmer-font text-lg md:text-xl text-gray-400 mt-2">វិនាទី</p>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <footer class="mt-8 pt-4 border-t border-white/10">
+            <p class="text-gray-500 text-sm">ពេលវេលាបន្តដើរទៅមុខជានិច្ច...</p>
+        </footer>
+    </div>
+
+    <script>
+        // Global variable for birth date
+        let birthDate;
+
+        // Get elements for date editing
+        const birthdateDisplayEl = document.getElementById('birthdate-display');
+        const editDateBtn = document.getElementById('edit-date-btn');
+        const dateInputForm = document.getElementById('date-input-form');
+        const dayInput = document.getElementById('day-input');
+        const monthInput = document.getElementById('month-input');
+        const yearInput = document.getElementById('year-input');
+        const updateDateBtn = document.getElementById('update-date-btn');
+        const errorMsgEl = document.getElementById('error-message');
+
+        // Get elements to display the time
+        const yearsEl = document.getElementById('years');
+        const monthsEl = document.getElementById('months');
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+
+        function formatBirthDate(date) {
+            const day = date.getDate();
+            const year = date.getFullYear();
+            const monthNames = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            const month = monthNames[date.getMonth()];
+            return `ចាប់តាំងពីថ្ងៃទី ${day} ខែ${month} ឆ្នាំ${year}`;
+        }
+
+        function updateAge() {
+            if (!birthDate) return;
+            const now = new Date();
+
+            let years = now.getFullYear() - birthDate.getFullYear();
+            let months = now.getMonth() - birthDate.getMonth();
+            let days = now.getDate() - birthDate.getDate();
+
+            if (days < 0) {
+                months--;
+                const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+
+            if (seconds < 0) { minutes--; seconds += 60; }
+            if (minutes < 0) { hours--; minutes += 60; }
+            if (hours < 0) { hours += 24; }
+
+            yearsEl.innerText = years;
+            monthsEl.innerText = months;
+            daysEl.innerText = days;
+            hoursEl.innerText = String(hours).padStart(2, '0');
+            minutesEl.innerText = String(minutes).padStart(2, '0');
+            secondsEl.innerText = String(seconds).padStart(2, '0');
+        }
+        
+        function initialize() {
+            const savedDate = localStorage.getItem('birthDate');
+            birthDate = savedDate ? new Date(savedDate) : new Date('2004-12-11T00:00:00');
+
+            birthdateDisplayEl.innerText = formatBirthDate(birthDate);
+
+            dayInput.value = birthDate.getDate();
+            monthInput.value = birthDate.getMonth() + 1; // Month is 0-indexed
+            yearInput.value = birthDate.getFullYear();
+
+            editDateBtn.addEventListener('click', () => {
+                dateInputForm.classList.toggle('hidden');
+            });
+
+            updateDateBtn.addEventListener('click', () => {
+                errorMsgEl.textContent = '';
+                const day = parseInt(dayInput.value);
+                const month = parseInt(monthInput.value) - 1; // to 0-indexed
+                const year = parseInt(yearInput.value);
+
+                if (day && month >= 0 && year && year > 1900 && year < 2100) {
+                     const newBirthDate = new Date(year, month, day);
+                     if (newBirthDate.getFullYear() === year && newBirthDate.getMonth() === month && newBirthDate.getDate() === day) {
+                        birthDate = newBirthDate;
+                        localStorage.setItem('birthDate', birthDate.toISOString());
+                        birthdateDisplayEl.innerText = formatBirthDate(birthDate);
+                        dateInputForm.classList.add('hidden');
+                        updateAge();
+                     } else {
+                        errorMsgEl.textContent = 'ថ្ងៃខែឆ្នាំមិនត្រឹមត្រូវ!';
+                     }
+                } else {
+                    errorMsgEl.textContent = 'សូមបំពេញទិន្នន័យអោយត្រឹមត្រូវ!';
+                }
+            });
+
+            setInterval(updateAge, 1000);
+            updateAge();
+        }
+
+        initialize();
+    </script>
+</body>
+</html>
+
